@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar Consulta | CMU UNCP{% endblock %}
+
+{% block content %}
+<section class="panel panel-angosto">
+    <h2>Registro Clínico Post-Atención — Cita #{{ cita.id }}</h2>
+    <p style="font-size:0.9rem; color:#475569;">
+        <strong>Paciente:</strong> {{ cita.paciente.apellidos }}, {{ cita.paciente.nombres }} (Edad: {{ cita.paciente.edad }} años)<br>
+        <strong>Alergias:</strong> {{ cita.paciente.alergias_conocidas }}<br>
+        <strong>Motivo:</strong> {{ cita.motivo_consulta }}
+    </p>
+
+    {% if form.errors %}
+        <div class="alerta alerta-error">
+            {{ form.errors }}
+        </div><!-- Fin div.alerta-error -->
+    {% endif %}
+
+    <form method="post" class="formulario" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primario">Guardar Consulta (Inmutable)</button>
+        <a href="{% url 'agenda' %}" class="btn btn-secundario">Volver</a>
+    </form><!-- Fin form registrar_consulta -->
+</section><!-- Fin section.panel -->
+{% endblock %}

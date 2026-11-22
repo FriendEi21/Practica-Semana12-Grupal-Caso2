@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Acceso Clínico | CMU UNCP{% endblock %}
+
+{% block content %}
+<section class="panel panel-angosto">
+    <h2>Ingreso a la Plataforma Médica</h2>
+    <p style="font-size:0.9rem; color:#475569;">
+        Acceso diferenciado para Administradores, Médicos, Recepcionistas y Pacientes (sesión segura de 20 min).
+    </p>
+
+    {% if form.errors %}
+        <div class="alerta alerta-error">
+            Usuario o contraseña inválidos. Intente nuevamente.
+        </div><!-- Fin div.alerta-error -->
+    {% endif %}
+
+    <form method="post" class="formulario">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primario">Ingresar</button>
+    </form><!-- Fin form login -->
+</section><!-- Fin section.panel -->
+{% endblock %}

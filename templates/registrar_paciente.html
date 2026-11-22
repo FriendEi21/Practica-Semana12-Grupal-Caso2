@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar Paciente | CMU UNCP{% endblock %}
+
+{% block content %}
+<section class="panel panel-angosto">
+    <h2>Registro de Paciente (Estudiante / Docente)</h2>
+
+    {% if form.errors %}
+        <div class="alerta alerta-error">
+            <strong>Revise los campos ingresados:</strong>
+            {{ form.errors }}
+        </div><!-- Fin div.alerta-error -->
+    {% endif %}
+
+    <form method="post" class="formulario" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primario">Guardar Paciente</button>
+        <a href="{% url 'agenda' %}" class="btn btn-secundario">Cancelar</a>
+    </form><!-- Fin form registrar_paciente -->
+</section><!-- Fin section.panel -->
+{% endblock %}

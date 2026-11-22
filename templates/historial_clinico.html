@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Historial Clínico | CMU UNCP{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h2>Historial Clínico Electrónico (Acceso Auditado)</h2>
+    <p>
+        <strong>Paciente:</strong> {{ paciente.apellidos }}, {{ paciente.nombres }} |
+        <strong>DNI:</strong> {{ paciente.dni }} |
+        <strong>Edad:</strong> {{ paciente.edad }} años |
+        <strong>Tipo:</strong> {{ paciente.get_tipo_display }} |
+        <strong>Alergias:</strong> <span class="badge badge-danger">{{ paciente.alergias_conocidas }}</span>
+    </p>
+
+    {% for cons in consultas %}
+        <article style="border:1px solid #cbd5e1; border-radius:8px; padding:1rem; margin-bottom:1rem; background:#f8fafc;">
+            <h3>Consulta #{{ cons.id }} — {{ cons.cita.fecha|date:"d/m/Y" }} ({{ cons.cita.medico.get_especialidad_display }})</h3>
+            <p><strong>Médico tratante:</strong> Dr(a). {{ cons.cita.medico.nombres_completos }} (CMP {{ cons.cita.medico.cmp }})</p>
+            <p><strong>Diagnóstico:</strong> {{ cons.diagnostico }}</p>
+            <p><strong>Tratamiento:</strong> {{ cons.tratamiento }}</p>
+            <p><strong>Medicamentos:</strong> {{ cons.medicamentos_recetados }}</p>
+            {% if cons.archivos_adjuntos %}
+                <p><strong>Adjuntos / Exámenes:</strong> {{ cons.archivos_adjuntos }}</p>
+            {% endif %}
+            {% if cons.proxima_cita_control %}
+                <p><strong>Próximo control:</strong> {{ cons.proxima_cita_control|date:"d/m/Y" }}</p>
+            {% endif %}
+
+            <div style="margin-top:0.75rem; padding-top:0.75rem; border-top:1px dashed #cbd5e1;">
+                <strong>Notas de seguimiento (la consulta base es inmutable):</strong>
+                <ul>
+                    {% for nota in cons.notas.all %}
+                        <li>[{{ nota.fecha_creacion|date:"d/m/Y H:i" }} - {{ nota.autor.username }}]: {{ nota.contenido }}</li>
+                    {% empty %}
+                        <li>Sin notas complementarias registradas.</li>
+                    {% endfor %}
+                </ul>
+
+                {% if rol == "Médicos" or rol == "Admins" %}
+                    <form method="post" class="formulario" style="margin-top:0.5rem;">
+                        {% csrf_token %}
+                        <input type="hidden" name="consulta_id" value="{{ cons.id }}">
+                        {{ form_nota.as_p }}
+                        <button type="submit" class="btn btn-primario">Agregar Nota</button>
+                    </form><!-- Fin form nota_consulta -->
+                {% endif %}
+            </div><!-- Fin div notas -->
+        </article><!-- Fin article consulta -->
+    {% empty %}
+        <p>Este paciente aún no registra consultas atendidas.</p>
+    {% endfor %}
+</section><!-- Fin section.panel -->
+{% endblock %}

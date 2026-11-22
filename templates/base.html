@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Consultas Médicas | CMU UNCP{% endblock %}</title>
+    <style>
+        :root {
+            --clinico-oscuro: #064e3b;
+            --clinico-medio: #065f46;
+            --turquesa: #0d9488;
+            --fondo: #f0fdfa;
+            --superficie: #ffffff;
+            --borde: #ccfbf1;
+            --texto: #134e4a;
+            --texto-neutro: #334155;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--fondo);
+            color: var(--texto-neutro);
+        }
+        header {
+            background: linear-gradient(90deg, var(--clinico-oscuro) 0%, var(--clinico-medio) 100%);
+            color: #ffffff;
+            border-bottom: 4px solid var(--turquesa);
+            box-shadow: 0 2px 10px rgba(6, 78, 59, 0.2);
+        }
+        .header-interno {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .marca-bloque { display: flex; flex-direction: column; }
+        .marca-titulo { font-size: 1.15rem; font-weight: 700; }
+        .marca-subtitulo { font-size: 0.78rem; color: #99f6e4; }
+        nav {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+        }
+        .nav-btn {
+            color: #f0fdfa;
+            text-decoration: none;
+            padding: 0.45rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: background-color 0.2s ease;
+        }
+        .nav-btn:hover { background-color: var(--turquesa); }
+        .nav-btn-acento { background-color: var(--turquesa); font-weight: 600; }
+        .nav-btn-acento:hover { background-color: #0f766e; }
+        .btn-logout {
+            background-color: #dc2626;
+            color: #ffffff;
+            border: none;
+            padding: 0.45rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-logout:hover { background-color: #b91c1c; }
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 1180px;
+            margin: 1.75rem auto;
+            padding: 0 1.25rem;
+        }
+        .panel {
+            background-color: var(--superficie);
+            border: 1px solid #99f6e4;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(6, 78, 59, 0.06);
+            margin-bottom: 1.5rem;
+        }
+        .panel-angosto { max-width: 620px; margin: 0 auto 1.5rem auto; }
+        h1, h2, h3 { margin-top: 0; color: var(--clinico-oscuro); }
+        .alerta {
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.92rem;
+            border-left: 4px solid var(--turquesa);
+            background-color: #ccfbf1;
+            color: #115e59;
+        }
+        .alerta-warning {
+            border-left-color: #d97706;
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .alerta-error {
+            border-left-color: #dc2626;
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .tabla-responsive { width: 100%; overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.75rem;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 0.75rem 0.85rem;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+            white-space: nowrap;
+        }
+        th { background-color: #f0fdfa; color: var(--clinico-oscuro); font-weight: 600; }
+        .badge {
+            display: inline-block;
+            padding: 0.22rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .badge-ok { background: #dcfce7; color: #166534; }
+        .badge-warn { background: #fef9c3; color: #854d0e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-info { background: #ccfbf1; color: #115e59; }
+        .btn {
+            display: inline-block;
+            padding: 0.48rem 0.95rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.86rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn-primario { background-color: var(--turquesa); color: #ffffff; }
+        .btn-primario:hover { background-color: #0f766e; }
+        .btn-peligro { background-color: #dc2626; color: #ffffff; }
+        .btn-secundario { background-color: #e2e8f0; color: #1e293b; }
+        .formulario p { margin-bottom: 1rem; }
+        .formulario label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+            font-size: 0.9rem;
+            color: var(--clinico-oscuro);
+        }
+        .formulario input, .formulario select, .formulario textarea {
+            width: 100%;
+            padding: 0.55rem 0.75rem;
+            border: 1px solid #94a3b8;
+            border-radius: 6px;
+            font-size: 0.94rem;
+            font-family: inherit;
+        }
+        .grid-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+        footer {
+            background-color: var(--clinico-oscuro);
+            color: #d1fae5;
+            border-top: 3px solid var(--turquesa);
+            margin-top: auto;
+        }
+        .footer-interno {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 1.15rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+        }
+        .footer-autor { color: #5eead4; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-interno">
+            <div class="marca-bloque">
+                <span class="marca-titulo">Plataforma de Consultas Médicas e Historial Clínico</span>
+                <span class="marca-subtitulo">Centro Médico Universitario — UNCP</span>
+            </div><!-- Fin div.marca-bloque -->
+
+            <nav>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'agenda' %}" class="nav-btn">Agenda</a>
+                    {% if rol == "Recepcionistas" or rol == "Pacientes" or rol == "Admins" %}
+                        <a href="{% url 'agendar_cita' %}" class="nav-btn nav-btn-acento">+ Agendar Cita</a>
+                    {% endif %}
+                    {% if rol == "Recepcionistas" or rol == "Admins" %}
+                        <a href="{% url 'registrar_paciente' %}" class="nav-btn">Nuevo Paciente</a>
+                    {% endif %}
+                    {% if rol == "Admins" %}
+                        <a href="{% url 'reportes' %}" class="nav-btn">Reportes</a>
+                        <a href="/admin/" class="nav-btn">Admin</a>
+                    {% endif %}
+                    <form method="post" action="{% url 'logout' %}" style="margin:0;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-logout">Salir ({{ user.username }})</button>
+                    </form><!-- Fin form logout -->
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-btn nav-btn-acento">Acceso Clínico</a>
+                {% endif %}
+            </nav><!-- Fin nav -->
+        </div><!-- Fin div.header-interno -->
+    </header><!-- Fin header -->
+
+    <main>
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="alerta {% if msg.tags == 'warning' %}alerta-warning{% elif msg.tags == 'error' %}alerta-error{% endif %}">
+                    {{ msg }}
+                </div><!-- Fin div.alerta -->
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main><!-- Fin main -->
+
+    <footer>
+        <div class="footer-interno">
+            <span>© 2026 Todos los derechos reservados por <span class="footer-autor">FriendEi21</span></span>
+            <span>Centro Médico Universitario UNCP | IS093A Semana 12</span>
+        </div><!-- Fin div.footer-interno -->
+    </footer><!-- Fin footer -->
+</body>
+</html>

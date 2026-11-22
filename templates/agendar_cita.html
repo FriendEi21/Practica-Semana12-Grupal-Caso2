@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Agendar Cita | CMU UNCP{% endblock %}
+
+{% block content %}
+<section class="panel panel-angosto">
+    <h2>Agendar Nueva Cita Médica</h2>
+    <p style="font-size:0.86rem; color:#475569;">
+        Horario de atención válido: Lunes a Viernes 08:00–18:00 | Sábados 08:00–13:00.
+    </p>
+
+    <form method="get" style="display:flex; gap:0.6rem; margin-bottom:1.1rem; flex-wrap:wrap;">
+        <select name="especialidad" style="flex:1; padding:0.48rem; border-radius:6px; border:1px solid #94a3b8;">
+            <option value="">Todas las especialidades</option>
+            {% for cod, nombre in especialidades %}
+                <option value="{{ cod }}" {% if especialidad_actual == cod %}selected{% endif %}>{{ nombre }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-secundario">Filtrar Médicos</button>
+    </form><!-- Fin form filtrar_especialidad -->
+
+    {% if form.errors %}
+        <div class="alerta alerta-error">
+            <strong>No se pudo agendar la cita:</strong>
+            {{ form.errors }}
+        </div><!-- Fin div.alerta-error -->
+    {% endif %}
+
+    <form method="post" class="formulario" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primario">Confirmar Cita</button>
+        <a href="{% url 'agenda' %}" class="btn btn-secundario">Volver</a>
+    </form><!-- Fin form agendar_cita -->
+</section><!-- Fin section.panel -->
+{% endblock %}

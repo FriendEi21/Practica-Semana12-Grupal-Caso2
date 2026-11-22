@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Agenda Médica | CMU UNCP{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h2>Agenda de Consultas Médicas</h2>
+    <p style="margin-top:-0.4rem;">
+        Grupo activo: <span class="badge badge-info">{{ rol }}</span>
+        {% if mi_paciente %}
+             | 
+            <a href="{% url 'historial_clinico' mi_paciente.id %}" class="btn btn-primario">Ver Mi Historial Clínico</a>
+        {% endif %}
+    </p>
+
+    <div class="tabla-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Especialidad</th>
+                    <th>Médico</th>
+                    <th>Paciente</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in citas %}
+                <tr>
+                    <td>#{{ c.id }}</td>
+                    <td>{{ c.fecha|date:"d/m/Y" }}</td>
+                    <td>{{ c.hora|time:"H:i" }}</td>
+                    <td>{{ c.medico.get_especialidad_display }}</td>
+                    <td>Dr(a). {{ c.medico.nombres_completos }}</td>
+                    <td>{{ c.paciente.apellidos }}, {{ c.paciente.nombres }}</td>
+                    <td>
+                        {% if c.estado == "completada" %}
+                            <span class="badge badge-ok">Completada</span>
+                        {% elif c.estado == "pendiente" %}
+                            <span class="badge badge-warn">Pendiente</span>
+                        {% else %}
+                            <span class="badge badge-danger">Cancelada</span>
+                        {% endif %}
+                    </td>
+                    <td style="display:flex; gap:0.4rem; align-items:center;">
+                        {% if rol == "Médicos" or rol == "Admins" %}
+                            <a href="{% url 'historial_clinico' c.paciente.id %}" class="btn btn-secundario">Historial</a>
+                            {% if c.estado == "pendiente" %}
+                                <a href="{% url 'registrar_consulta' c.id %}" class="btn btn-primario">Atender</a>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if c.estado == "pendiente" and puede_cancelar %}
+                            <form method="post" action="{% url 'cancelar_cita' c.id %}" style="margin:0;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-peligro">Cancelar</button>
+                            </form><!-- Fin form cancelar -->
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">No hay citas registradas en su vista actual.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div><!-- Fin div.tabla-responsive -->
+</section><!-- Fin section.panel -->
+{% endblock %}
